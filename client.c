@@ -85,10 +85,10 @@ int main(int argc, char *argv[]) {
 
 		printf("Menú principal:\n");
 		printf("1. Enviar missatge\n");
-		printf("2. Opció 2\n");
-		printf("3. Opció 3\n");
-		printf("4. Opció 4\n");
-		printf("5. Opció 5\n");
+		printf("2. Inserir cim\n");
+		printf("3. Mostrar llista de cims\n");
+		printf("4. Mostrar estadístiques\n");
+		printf("5. Eliminar un cim\n");
 		printf("6. Sortir\n");
 		printf("Opció: ");
 
@@ -127,21 +127,72 @@ int main(int argc, char *argv[]) {
 				return 0;
 			}
 			break;
-
+		// Demanar a l'usuari una muntanya i les seves característiques
 		case 2:
-			// Implementar Opció 2
+			float km =0, temps = 0;
+			int desnivell = 0;
+			char nom[1000];
+		
+			//Escanejar dades inserides en variables diferents
+			printf("Insereix el cim i les seves característiques (Nom, km, desnivell [m], temps [min]): ");
+			scanf("%s %f %d %f", nom, &km, &desnivell, &temps);
+
+			//Enviar les dades al servidor
+			memset(buffer, 0, BUFFER_SIZE);
+			snprintf(buffer, BUFFER_SIZE, "2;%s;%f;%d;%f", nom, km, desnivell, temps);
+			send(sock, buffer, strlen(buffer), 0);
+
+			//Rebre la confirmació del servidor
+			memset(buffer, 0, BUFFER_SIZE);
+			recv(sock, buffer, BUFFER_SIZE, 0);
+			printf("%s\n", buffer);
 			break;
 
+		//Mostrar llista de cims
 		case 3:
-			// Implementar Opció 3
-			break;
+			// Enviar al servidor la peticó de llistar els cims
+			memset(buffer, 0, BUFFER_SIZE);
+			strcpy(buffer, "3");
+			send(sock, buffer, BUFFER_SIZE, 0);
 
+			// Rebre resposta del servidor
+			memset(buffer, 0, BUFFER_SIZE);
+			recv(sock, buffer, BUFFER_SIZE, 0);
+			
+			//Mostrar per pantalla
+			printf("\n%s\n", buffer);
+			break;
+		
+		//Mostrar estadístiques
 		case 4:
-			// Implementar Opció 4
+			//Enviar al servidor la petició
+			memset(buffer, 0, BUFFER_SIZE);
+			strcpy(buffer, "4");
+			send(sock, buffer, BUFFER_SIZE, 0);
+		
+			//Obtenir i mostrar per pantalla les estadístiques enviades del servidor
+			memset(buffer, 0, BUFFER_SIZE);
+			recv(sock, buffer, BUFFER_SIZE, 0);
+			printf("\n%s\n", buffer);
 			break;
 
+		//Esborrar un cim de la llista a escollir
 		case 5:
-			// Implementar Opció 5
+			int index;
+			
+			//Demanar la posició a la llista del cim que es vol eliminar
+			printf("Insereix el número del cim que vols eliminar: ");
+			scanf("%d", &index);
+
+			//Enviar al servidor la opció escollida i l'index
+			memset(buffer, 0, BUFFER_SIZE);
+			snprintf(buffer, BUFFER_SIZE, "5;%d", index);
+			send(sock, buffer, BUFFER_SIZE, 0);
+
+			//Mostrar per pantalla la confirmació
+			memset(buffer, 0, BUFFER_SIZE);
+			recv(sock, buffer, BUFFER_SIZE, 0);
+			printf("%s\n", buffer);
 			break;
 
 		default:
